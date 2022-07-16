@@ -1,5 +1,12 @@
+import multer from "multer";
 import { addBank } from "../../controllers/users/bank.controller.js";
+import { changeCoin } from "../../controllers/users/exchangeCoin.controller.js";
 import {
+  buyCoin,
+  getUserWallet,
+} from "../../controllers/users/user-wallet.controller.js";
+import {
+  changePassword,
   createUser,
   getUser,
   getUserEdit,
@@ -10,6 +17,17 @@ import {
 } from "../../controllers/users/user.controller.js";
 import { userMiddleware } from "../../middleware/user.middleware.js";
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/users/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 export default (app) => {
   app.post("/users/signup", createUser);
   app.post("/users/signin", signInUser);
@@ -17,8 +35,19 @@ export default (app) => {
   app.put("/users/otp", userMiddleware, sendOtp);
   app.put("/users/verify/otp", userMiddleware, optVerification);
   app.patch("/users/edit", userMiddleware, getUserEdit);
-  app.put("/users/update", userMiddleware, updateProfile);
+  app.put(
+    "/users/update",
+    userMiddleware,
+    upload.single("profile"),
+    updateProfile,
+  );
+  app.put("/users/change/password", userMiddleware, changePassword);
 
   // banks routes
   app.post("/users/bank", userMiddleware, addBank);
+
+  // user wallet routes
+  app.get("/users/wallet", userMiddleware, getUserWallet);
+  app.put("/users/buy/coins/:id", userMiddleware, buyCoin);
+  app.post("/users/exchange/coins", userMiddleware, changeCoin);
 };

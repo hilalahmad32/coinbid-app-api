@@ -1,6 +1,7 @@
 import express from "express";
 import { config } from "dotenv";
 config();
+import cors from "cors";
 const app = express();
 const port = process.env.PORT || 5000;
 import adminRoutes from "./routes/admins/admin.routes.js";
@@ -11,6 +12,8 @@ connection();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads/", express.static("uploads/"));
+app.use(cors());
 adminRoutes(app);
 userRoutes(app);
 app.listen(port, () => {

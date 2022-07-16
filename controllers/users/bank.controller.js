@@ -2,7 +2,7 @@ import Bank from "../../models/Bank.model.js";
 
 export const addBank = async (req, res) => {
   try {
-    const user_id = req.user_idid;
+    const user_id = req.user_id;
     const { bank_name, account_number, ifsc_code, upi_id } = req.body;
     const is_bank = await Bank.findOne({
       bank_name: bank_name,
@@ -34,8 +34,6 @@ export const addBank = async (req, res) => {
         message: "Bank Already Add",
       });
     }
-
-    const banks = new Bank({});
   } catch (errors) {
     return res.send({
       success: false,

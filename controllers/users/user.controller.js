@@ -2,6 +2,9 @@ import User from "../../models/User.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import UserWallet from "../../models/UserWallet.model.js";
+import BounesCoin from "../../models/Bounes.model.js";
+import fs from "fs";
 
 // mail confiraton
 const transporter = nodemailer.createTransport({
@@ -48,6 +51,13 @@ export const createUser = async (req, res, next) => {
         password: hash_password,
       });
       const result = await users.save();
+      const coins = await BounesCoin.find({});
+      console.log(coins[0].coins);
+      const wallets = new UserWallet({
+        coins: coins[0].coins,
+        users: result._id,
+      });
+      await wallets.save();
       if (result) {
         return res.send({
           success: true,
@@ -263,14 +273,30 @@ export const getUserEdit = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const _id = req.user_id;
-    const { name, email, state, city, mobile, profile } = req.body;
+    const { name, email, state, city, mobile, old_image } = req.body;
+    const profile = req.file;
+    console.log(old_image);
+    let filename = "";
+    if (profile != "") {
+      filename = req.file.filename;
+      try {
+        fs.unlinkSync("./uploads/users/" + old_image);
+      } catch (error) {
+        res.send({
+          success: false,
+          message: error.message,
+        });
+      }
+    } else {
+      filename = old_image;
+    }
     const users = await User.findByIdAndUpdate({ _id }, {
       name,
       email,
       state,
       city,
       mobile,
-      profile,
+      profile: filename,
     });
     if (users) {
       return res.send({
@@ -281,6 +307,34 @@ export const updateProfile = async (req, res) => {
       return res.send({
         success: false,
         message: "Some Problem Occured",
+      });
+    }
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const user_id = req.user_id;
+    const { password, new_password } = req.body;
+    const users = await User.findById({ _id: user_id });
+    const hash_password = await bcryptjs.hash(new_password, 10);
+    const compare_password = await bcryptjs.compare(password, users.password);
+    if (compare_password) {
+      users.password = hash_password;
+      await users.save();
+      return res.send({
+        success: true,
+        message: "Password change Successfully",
+      });
+    } else {
+      return res.send({
+        success: true,
+        message: "Invalid Password",
       });
     }
   } catch (error) {
