@@ -13,7 +13,7 @@ export const userMiddleware = (req, res, next) => {
     try {
       const { user_id } = jwt.verify(
         token,
-        process.env.SECRET_KEY,
+        "HILALAHMADISAFULLSTACKDEVELOPER",
       );
       req.user_id = user_id;
     } catch (err) {

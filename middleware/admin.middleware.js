@@ -13,7 +13,7 @@ export const adminMiddleware = (req, res, next) => {
     try {
       const { admin_id } = jwt.verify(
         token,
-        process.env.SECRET_KEY,
+        "HILALAHMADISAFULLSTACKDEVELOPER",
       );
       req.admin_id = admin_id;
     } catch (err) {

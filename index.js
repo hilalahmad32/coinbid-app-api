@@ -1,6 +1,6 @@
 import express from "express";
-import { config } from "dotenv";
-config();
+// import { config } from "dotenv";
+// config();
 import cors from "cors";
 const app = express();
 const port = process.env.PORT || 5000;
