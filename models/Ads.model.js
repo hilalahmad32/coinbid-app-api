@@ -19,6 +19,10 @@ const adsSchema = new mongoose.Schema({
   images: {
     type: String,
   },
+  status: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Ads = mongoose.model("Ad", adsSchema);

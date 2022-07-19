@@ -1,4 +1,8 @@
 import multer from "multer";
+import {
+  unWatchedAds,
+  userWatchedAds,
+} from "../../controllers/admins/ads.controller.js";
 import { withRequest } from "../../controllers/admins/request.model.js";
 import { addBank } from "../../controllers/users/bank.controller.js";
 import { changeCoin } from "../../controllers/users/exchangeCoin.controller.js";
@@ -52,4 +56,8 @@ export default (app) => {
   app.put("/users/buy/coins/:id", userMiddleware, buyCoin);
   app.post("/users/exchange/coins", userMiddleware, changeCoin);
   app.post("/users/request/payment", userMiddleware, withRequest);
+
+  // show ads
+  app.get("/users/ads", userMiddleware, unWatchedAds);
+  app.put("/users/watch/ads/:id", userMiddleware, userWatchedAds);
 };

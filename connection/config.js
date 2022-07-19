@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const connection = async () => {
   mongoose.connect(
-    process.env.MONGODB_URL,
+    // process.env.MONGODB_URL,
+    "mongodb+srv://hilalahmad:twhbVOlEuCObupdY@cluster0.f8tgo.mongodb.net/coinbid",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,

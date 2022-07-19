@@ -11,8 +11,6 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "programmerhero6@gmail.com",
-    // pass: "dlmeuwnrxsviakxy",
-    pass: "wsxcpycoanjvmnjw",
   },
 });
 
@@ -81,6 +79,9 @@ export const signInUser = async (req, res) => {
         const token = jwt.sign(
           user_id,
           process.env.SECRET_KEY,
+          {
+            expiresIn: "1hr",
+          },
         );
         res.cookie("user_access_token", token, {
           httpOnly: true,

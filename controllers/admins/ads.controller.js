@@ -1,6 +1,7 @@
 import PackagePlan from "../../models/PackagePlan.model.js";
 import fs from "fs";
 import Ads from "../../models/Ads.model.js";
+import UserWallet from "../../models/UserWallet.model.js";
 
 export const getAds = async (req, res) => {
   try {
@@ -177,6 +178,63 @@ export const deleteAds = async (req, res) => {
     //   });
     // }
     // const ad1 = await Ads.findByIdAndDelete({ _id: id });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// unwatched ads
+export const unWatchedAds = async (req, res) => {
+  try {
+    const ads = await Ads.find({ status: 0 }).limit(5);
+    return res.send({
+      success: true,
+      ads: ads,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// watch ads
+export const watchedAds = async (req, res) => {
+  try {
+    const users = req.user_id;
+    const ads = await Ads.find({ status: 1 }).limit(5);
+    const wallet = await UserWallet.findOne({ users });
+    return res.send({
+      success: true,
+      ads: ads,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// user watched ads
+export const userWatchedAds = async (req, res) => {
+  try {
+    const users = req.user_id;
+    const _id = req.params.id;
+    const ads = await Ads.findByIdAndUpdate({ _id }, {
+      status: 1,
+    });
+    const wallet = await UserWallet.findOne({ users });
+    wallet.coins += parseInt(ads.price);
+    await wallet.save();
+    return res.send({
+      success: true,
+      "message": "Ads watcheds",
+    });
   } catch (error) {
     return res.send({
       success: false,
