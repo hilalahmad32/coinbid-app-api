@@ -10,7 +10,7 @@ import {
   editAds,
   getAds,
   updateAds,
-} from "../../controllers/admins/Ads.controller.js";
+} from "../../controllers/admins/ads.controller.js";
 import {
   addBounesCoin,
   deleteBounesCoin,
