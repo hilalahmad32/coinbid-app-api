@@ -50,6 +50,10 @@ import {
   getBanner,
   updateBanner,
 } from "../../controllers/admins/banner.controller.js";
+import {
+  ApproveRequest,
+  getRequest,
+} from "../../controllers/admins/request.model.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -74,7 +78,10 @@ export default (app) => {
   app.post(
     "/admin/ads",
     adminMiddleware,
-    upload.array("images", 10),
+    upload.fields([{ name: "images", maxCount: 10 }, {
+      name: "video",
+      maxCount: 1,
+    }]),
     addAds,
   );
   app.get("/admin/ads", adminMiddleware, getAds);
@@ -94,7 +101,7 @@ export default (app) => {
   app.put("/admin/coin/:id", adminMiddleware, updateCoin);
   app.delete("/admin/coin/:id", adminMiddleware, deleteCoin);
 
-  // coin routes
+  // bounes
   app.get("/admin/bounes/coin", adminMiddleware, getBounesCoin);
   app.post("/admin/bounes/coin", adminMiddleware, addBounesCoin);
   app.patch("/admin/bounes/coin/:id", adminMiddleware, editBounesCoin);
@@ -102,11 +109,29 @@ export default (app) => {
   app.delete("/admin/bounes/coin/:id", adminMiddleware, deleteBounesCoin);
 
   // package plan routes
-  app.get("/admin/package/plan", adminMiddleware, getPackageplan);
-  app.post("/admin/package/plan", adminMiddleware, createPackagePlan);
+  app.get(
+    "/admin/package/plan",
+    adminMiddleware,
+    getPackageplan,
+  );
+  app.post(
+    "/admin/package/plan",
+    adminMiddleware,
+    upload.single("icon"),
+    createPackagePlan,
+  );
   app.patch("/admin/package/plan/:id", adminMiddleware, editPackageplan);
-  app.put("/admin/package/plan/:id", adminMiddleware, updatePackagePlan);
-  app.delete("/admin/package/plan/:id", adminMiddleware, deletePackageplan);
+  app.put(
+    "/admin/package/plan/:id",
+    upload.single("icon"),
+    adminMiddleware,
+    updatePackagePlan,
+  );
+  app.delete(
+    "/admin/package/plan/:id",
+    adminMiddleware,
+    deletePackageplan,
+  );
 
   // price coins plan routes
   app.get("/admin/price/coin", adminMiddleware, getPriceCoin);
@@ -127,4 +152,8 @@ export default (app) => {
     upload.single("image"),
     updateBanner,
   );
+
+  // user with draw
+  app.get("/admin/withdraws/request", adminMiddleware, getRequest);
+  app.put("/admin/withdraws/request/:id", adminMiddleware, ApproveRequest);
 };

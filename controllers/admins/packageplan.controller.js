@@ -1,5 +1,5 @@
 import PackagePlan from "../../models/PackagePlan.model.js";
-
+import fs from "fs";
 export const getPackageplan = async (req, res) => {
   try {
     const packages = await PackagePlan.find({});
@@ -18,7 +18,7 @@ export const getPackageplan = async (req, res) => {
 export const createPackagePlan = async (req, res) => {
   try {
     const { title, price, expire_date } = req.body;
-
+    const file = req.file;
     let filename = "";
     if (file) {
       filename = req.file.filename;
@@ -54,16 +54,19 @@ export const updatePackagePlan = async (req, res) => {
   try {
     const id = req.params.id;
     const { title, price, expire_date, old_image } = req.body;
+    const file = req.file;
     let filename = "";
     if (file) {
       filename = req.file.filename;
-      try {
-        fs.unlinkSync("./uploads/" + old_image);
-      } catch (error) {
-        res.send({
-          success: false,
-          message: error.message,
-        });
+      if (old_image != "") {
+        try {
+          fs.unlinkSync("./uploads/" + old_image);
+        } catch (error) {
+          res.send({
+            success: false,
+            message: error.message,
+          });
+        }
       }
     } else {
       filename = old_image;
@@ -116,9 +119,9 @@ export const deletePackageplan = async (req, res) => {
     PackagePlan.findByIdAndDelete({ _id }, (err, result) => {
       if (result.icon != "") {
         try {
-          fs.unlinkSync("./uploads/" + val);
+          fs.unlinkSync("./uploads/" + result.icon);
         } catch (error) {
-          res.send(error);
+          return res.send(error);
         }
       }
       if (result) {

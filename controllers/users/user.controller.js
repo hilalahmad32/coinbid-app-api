@@ -8,31 +8,20 @@ import fs from "fs";
 
 // mail confiraton
 const transporter = nodemailer.createTransport({
-  // service: "gmail",
-  // auth: {
-  //   xoauth2gen: xoauth2.createXOAuth2Generator({
-  //     user: "programmerhero6@gmail.com",
-  //     clientId: "938269283248-l2hpd749696itb20hjmjj0u7vgqbftkb.apps.googleusercontent.com",
-  //     clientSecret: "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",
-  //     refreshToken: "{User Refresh Token}",
-  //   }),
-  //   email: "programmerhero6@gmail.com",
-  //   pass: "programmerhero123_321",
-  // },
-  host: "smtp.mailtrap.io",
-  port: 2525,
+  service: "gmail",
   auth: {
-    user: "88756bf727da7b",
-    pass: "142c913fbdc2f5",
+    user: "programmerhero6@gmail.com",
+    // pass: "dlmeuwnrxsviakxy",
+    pass: "wsxcpycoanjvmnjw",
   },
 });
 
-const mailOptions = {
-  from: "hakofficial05@gmail.com",
-  to: "programmerhero6@gmail.com",
-  subject: "testing mail",
-  text: "mail is sends",
-};
+// const mailOptions = {
+//   from: "hakofficial05@gmail.com",
+//   to: "programmerhero6@gmail.com",
+//   subject: "testing mail",
+//   text: "mail is sends",
+// };
 
 export const createUser = async (req, res, next) => {
   try {
@@ -151,11 +140,12 @@ export const sendOtp = async (req, res) => {
     } else {
       users.otp = Math.floor(Math.random() * 100000);
       await users.save();
+      // mskexucbtcpkfwej
       const mailOptions = {
-        from: "hakofficial05@gmail.com",
-        to: "programmerhero6@gmail.com",
+        from: "programmerhero6@gmail.com",
+        to: `${users.email}`,
         subject: "testing mail",
-        text: `this is your otp ${users.otp}`,
+        text: `<h1>this is your otp ${users.otp}</h1>`,
       };
       transporter.sendMail(mailOptions, (err, info) => {
         if (err) {
@@ -275,17 +265,18 @@ export const updateProfile = async (req, res) => {
     const _id = req.user_id;
     const { name, email, state, city, mobile, old_image } = req.body;
     const profile = req.file;
-    console.log(old_image);
     let filename = "";
     if (profile != "") {
       filename = req.file.filename;
-      try {
-        fs.unlinkSync("./uploads/users/" + old_image);
-      } catch (error) {
-        res.send({
-          success: false,
-          message: error.message,
-        });
+      if (old_image != "") {
+        try {
+          fs.unlinkSync("./uploads/users/" + old_image);
+        } catch (error) {
+          res.send({
+            success: false,
+            message: error.message,
+          });
+        }
       }
     } else {
       filename = old_image;

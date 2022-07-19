@@ -9,6 +9,7 @@ const bankSchema = new mongoose.Schema({
   users: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   ifsc_code: { type: String, required: true },
   upi_id: { type: String, required: true },
+  amount: { type: Number, default: 0 },
   status: { type: String, default: "pending" },
 });
 

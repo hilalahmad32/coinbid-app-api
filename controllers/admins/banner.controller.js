@@ -1,5 +1,5 @@
 import Banner from "../../models/Banner.model.js";
-
+import fs from "fs";
 export const getBanner = async (req, res) => {
   try {
     const banners = await Banner.find({});
@@ -22,6 +22,7 @@ export const addBanner = async (req, res) => {
     if (file) {
       filename = req.file.filename;
     }
+    console.log(filename);
     const banners = new Banner({
       banner: filename,
     });
@@ -34,7 +35,7 @@ export const addBanner = async (req, res) => {
     }
   } catch (error) {
     return res.send({
-      success: true,
+      success: false,
       message: error.message,
     });
   }
@@ -44,6 +45,7 @@ export const updateBanner = async (req, res) => {
   try {
     const _id = req.params.id;
     const file = req.file;
+    console.log(req.file);
     const { old_image } = req.body;
     let filename = "";
     if (file) {
@@ -98,7 +100,7 @@ export const deleteBanner = async (req, res) => {
     Banner.findByIdAndDelete({ _id }, (err, result) => {
       if (result.banner != "") {
         try {
-          fs.unlinkSync("./uploads/" + val);
+          fs.unlinkSync("./uploads/" + result.banner);
         } catch (error) {
           res.send(error);
         }

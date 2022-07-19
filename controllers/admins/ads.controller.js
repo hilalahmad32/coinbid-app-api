@@ -4,7 +4,7 @@ import Ads from "../../models/Ads.model.js";
 
 export const getAds = async (req, res) => {
   try {
-    const ads = await Ads.find({});
+    const ads = await Ads.find({}).populate("packages");
     const packages = await PackagePlan.find({});
     res.send({
       success: true,
@@ -22,7 +22,7 @@ export const getAds = async (req, res) => {
 export const updateAds = async (req, res) => {
   try {
     const id = req.params.id;
-    const { title, price, old_image } = req.body;
+    const { title, price, old_image, new_package, old_package } = req.body;
     const files = req.files;
     let filenames = [];
     if (files != "") {
@@ -43,12 +43,21 @@ export const updateAds = async (req, res) => {
     } else {
       filenames = old_image;
     }
-    const json_image = filenames != "" ? JSON.stringify(filenames) : old_image;
+    const json_image = files != "" ? JSON.stringify(filenames) : old_image;
     const ads = await Ads.findByIdAndUpdate({ _id: id }, {
       title,
       price,
       images: json_image,
+      packages: new_package,
     });
+    const old_pack = await PackagePlan.findById({ _id: old_package });
+    const new_pack = await PackagePlan.findById({ _id: new_package });
+    if (new_package != old_package) {
+      old_pack.banners >= 1 ? old_pack.banners -= 1 : "";
+      new_pack.banners >= 0 ? new_pack.banners += 1 : "";
+    }
+    await old_pack.save();
+    await new_pack.save();
     if (ads) {
       return res.send({
         success: true,
@@ -71,26 +80,30 @@ export const updateAds = async (req, res) => {
 export const addAds = async (req, res) => {
   try {
     const { title, price, packages } = req.body;
-    // const video = req.files.filename;
-    const files = req.files;
+    const video = req.files.video[0].filename;
+    console.log(video);
+    const files = req.files.images;
     let filenames = [];
     if (files) {
-      for (var i in files) {
+      for (let i in files) {
         filenames.push(files[i].filename);
       }
     } else {
       filenames = "";
     }
     const json_image = JSON.stringify(filenames);
+
     const ads = new Ads({
       title,
       price,
       images: json_image,
       packages,
+      video,
     });
+    console.log(ads);
     const ad = await ads.save();
     const plan = await PackagePlan.findById({ _id: packages });
-    plan.ads += 1;
+    plan.banners += 1;
     await plan.save();
     if (ad) {
       return res.send({

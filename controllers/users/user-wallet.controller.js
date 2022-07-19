@@ -5,7 +5,6 @@ import User from "../../models/User.model.js";
 export const getUserWallet = async (req, res) => {
   try {
     const users = req.user_id;
-    console.log(users);
     const wallets = await UserWallet.findOne({ users });
     return res.send({
       success: true,
@@ -22,6 +21,7 @@ export const getUserWallet = async (req, res) => {
 export const buyCoin = async (req, res) => {
   try {
     const id = req.params.id;
+    console.log(id);
     const user_id = req.user_id;
     const coins = await Coin.findById({ _id: id });
     const wallets = await UserWallet.findOne({ user: user_id });

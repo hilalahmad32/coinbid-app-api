@@ -24,7 +24,7 @@ export const changeCoin = async (req, res) => {
         const result = await exchange.save();
         if (result) {
           wallet.coins -= parseInt(coins);
-          wallet.price += parseInt(totalprice);
+          wallet.price += totalprice;
           await wallet.save();
           return res.send({
             success: true,

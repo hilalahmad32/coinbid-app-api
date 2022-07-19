@@ -1,4 +1,5 @@
 import multer from "multer";
+import { withRequest } from "../../controllers/admins/request.model.js";
 import { addBank } from "../../controllers/users/bank.controller.js";
 import { changeCoin } from "../../controllers/users/exchangeCoin.controller.js";
 import {
@@ -50,4 +51,5 @@ export default (app) => {
   app.get("/users/wallet", userMiddleware, getUserWallet);
   app.put("/users/buy/coins/:id", userMiddleware, buyCoin);
   app.post("/users/exchange/coins", userMiddleware, changeCoin);
+  app.post("/users/request/payment", userMiddleware, withRequest);
 };
