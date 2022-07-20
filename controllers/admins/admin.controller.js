@@ -18,7 +18,7 @@ export const adminLogin = async (req, res) => {
             admin_id,
             "HILALAHMADISAFULLSTACKDEVELOPER",
             {
-              expiresIn: "1hr",
+              expiresIn: "1day",
             },
           );
           res.cookie("admin_access_token", token, {

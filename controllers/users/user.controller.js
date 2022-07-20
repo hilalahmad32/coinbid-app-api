@@ -80,7 +80,7 @@ export const signInUser = async (req, res) => {
           user_id,
           "HILALAHMADISAFULLSTACKDEVELOPER",
           {
-            expiresIn: "1hr",
+            expiresIn: "1day",
           },
         );
         res.cookie("user_access_token", token, {

@@ -1,4 +1,5 @@
 import Bank from "../../models/Bank.model.js";
+import Notification from "../../models/Notification.model.js";
 import UserWallet from "../../models/UserWallet.model.js";
 import WithDrawRequest from "../../models/WithdrawRequest.model.js";
 
@@ -96,14 +97,49 @@ export const withRequest = async (req, res) => {
 export const ApproveRequest = async (req, res) => {
   try {
     const _id = req.params.id;
-    const withdraws = await Bank.findByIdAndUpdate({ _id }, {
+    const banks = await Bank.findByIdAndUpdate({ _id }, {
       status: "Approved",
     });
-    console.log(withdraws);
-    if (withdraws) {
+
+    if (banks) {
+      const notification = new Notification({
+        users: banks.users,
+        message: `Your have account has been ${banks.status}`,
+      });
+      await notification.save();
       return res.send({
         success: false,
         message: "Approved Successfully",
+      });
+    } else {
+      return res.send({
+        success: false,
+        message: "Some Problem",
+      });
+    }
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export const rejectedRequest = async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const banks = await Bank.findByIdAndUpdate({ _id }, {
+      status: "Rejected",
+    });
+
+    if (banks) {
+      const notification = new Notification({
+        users: banks.users,
+        message: `Your have account has been ${banks.status}`,
+      });
+      await notification.save();
+      return res.send({
+        success: false,
+        message: "Rejected Successfully",
       });
     } else {
       return res.send({

@@ -3,7 +3,7 @@ import {
   unWatchedAds,
   userWatchedAds,
 } from "../../controllers/admins/ads.controller.js";
-import { withRequest } from "../../controllers/admins/request.model.js";
+import { withRequest } from "../../controllers/admins/request.controller.js";
 import { addBank } from "../../controllers/users/bank.controller.js";
 import { changeCoin } from "../../controllers/users/exchangeCoin.controller.js";
 import {

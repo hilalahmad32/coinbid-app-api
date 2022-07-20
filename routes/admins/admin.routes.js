@@ -53,7 +53,8 @@ import {
 import {
   ApproveRequest,
   getRequest,
-} from "../../controllers/admins/request.model.js";
+  rejectedRequest,
+} from "../../controllers/admins/request.controller.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -155,5 +156,6 @@ export default (app) => {
 
   // user with draw
   app.get("/admin/withdraws/request", adminMiddleware, getRequest);
-  app.put("/admin/withdraws/request/:id", adminMiddleware, ApproveRequest);
+  app.put("/admin/bank/approve/:id", adminMiddleware, ApproveRequest);
+  app.put("/admin/bank/rejected/:id", adminMiddleware, rejectedRequest);
 };
