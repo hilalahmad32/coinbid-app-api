@@ -65,7 +65,7 @@ export const admin = async (req, res) => {
       "-password",
     );
     return res.send({
-      "success": false,
+      "success": true,
       "admins": admins,
     });
   } catch (error) {
