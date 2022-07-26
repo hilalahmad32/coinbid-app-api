@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const connection = async () => {
   mongoose.connect(
-    "mongodb://localhost:27017/coinbid",
-    // "mongodb+srv://hilalahmad:twhbVOlEuCObupdY@cluster0.f8tgo.mongodb.net/coinbid",
+    // "mongodb://localhost:27017/coinbid",
+    "mongodb+srv://hilalahmad:twhbVOlEuCObupdY@cluster0.f8tgo.mongodb.net/coinbid",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
