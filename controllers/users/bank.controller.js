@@ -1,4 +1,5 @@
 import Bank from "../../models/Bank.model.js";
+import Notification from "../../models/Notification.model.js";
 
 export const addBank = async (req, res) => {
   try {
@@ -18,6 +19,11 @@ export const addBank = async (req, res) => {
       });
       const bank = await banks.save();
       if (bank) {
+        const notification = new Notification({
+          users: user_id,
+          message: ` is Add a new Bank`,
+        });
+        await notification.save();
         return res.send({
           success: true,
           message: "Bank Add Successfully",

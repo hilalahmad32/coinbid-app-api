@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import UserWallet from "../../models/UserWallet.model.js";
 import BounesCoin from "../../models/Bounes.model.js";
+import Notification from "../../models/Notification.model.js";
 import fs from "fs";
 
 // mail confiraton
@@ -39,13 +40,17 @@ export const createUser = async (req, res, next) => {
       });
       const result = await users.save();
       const coins = await BounesCoin.find({});
-      console.log(coins[0].coins);
       const wallets = new UserWallet({
         coins: coins[0].coins,
         users: result._id,
       });
       await wallets.save();
       if (result) {
+        const notification = new Notification({
+          users: result._id,
+          message: `New ${name} User are Signup`,
+        });
+        await notification.save();
         return res.send({
           success: true,
           message: "Account Create Successfully",
@@ -86,6 +91,7 @@ export const signInUser = async (req, res) => {
         res.cookie("user_access_token", token, {
           httpOnly: true,
         });
+
         return res.send({
           success: true,
           token,
@@ -226,6 +232,11 @@ export const optVerification = async (req, res) => {
           success: true,
           message: "Email verificaction Sucessfully",
         });
+        const notification = new Notification({
+          users: users._id,
+          message: `${users.name} is verified Our Account`,
+        });
+        await notification.save();
       } else {
         res.send({
           success: false,

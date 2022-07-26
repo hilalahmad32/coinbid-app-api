@@ -1,6 +1,7 @@
 import Coin from "../../models/Coin.model.js";
 import UserWallet from "../../models/UserWallet.model.js";
 import User from "../../models/User.model.js";
+import Notification from "../../models/Notification.model.js";
 
 export const getUserWallet = async (req, res) => {
   try {
@@ -21,15 +22,21 @@ export const getUserWallet = async (req, res) => {
 export const buyCoin = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
     const user_id = req.user_id;
     const coins = await Coin.findById({ _id: id });
-    const wallets = await UserWallet.findOne({ user: user_id });
+    const wallets = await UserWallet.findOne({ user: user_id }).populate(
+      "users",
+    );
     if (wallets.price >= coins.price) {
       wallets.coins += parseInt(coins.coins);
       wallets.price -= parseInt(coins.price);
       await wallets.save();
       if (wallets) {
+        const notification = new Notification({
+          users: user_id,
+          message: `${wallets.users.name} is buy ${coins.coins}`,
+        });
+        await notification.save();
         return res.send({
           success: true,
           message: "Coin Buy Successfully",

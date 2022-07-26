@@ -3,7 +3,12 @@ import {
   admin,
   adminLogin,
 } from "../../controllers/admins/admin.controller.js";
-import { getBanks } from "../../controllers/admins/bank.controller.js";
+import {
+  getBanks,
+  getDashboardBanks,
+  paid,
+  unpaid,
+} from "../../controllers/admins/bank.controller.js";
 import {
   addAds,
   deleteAds,
@@ -56,6 +61,11 @@ import {
   rejectedRequest,
 } from "../../controllers/admins/request.controller.js";
 
+import {
+  getNotifications,
+} from "../../controllers/admins/notification.controller.js";
+import { verify } from "../../controllers/admins/csvVerification.controller.js";
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
@@ -74,6 +84,9 @@ export default (app) => {
   app.put("/admin/update/users/:id", adminMiddleware, updateUser);
   app.delete("/admin/delete/users/:id", adminMiddleware, deleteUser);
   app.get("/admin/banks", adminMiddleware, getBanks);
+  app.get("/admin/banks/unpaid", adminMiddleware, unpaid);
+  app.get("/admin/banks/paid", adminMiddleware, paid);
+  app.get("/admin/dashboard/banks", adminMiddleware, getDashboardBanks);
 
   // ads routes
   app.post(
@@ -118,7 +131,7 @@ export default (app) => {
   app.post(
     "/admin/package/plan",
     adminMiddleware,
-    upload.single("icon"),
+    // upload.single("icon"),
     createPackagePlan,
   );
   app.patch("/admin/package/plan/:id", adminMiddleware, editPackageplan);
@@ -158,4 +171,6 @@ export default (app) => {
   app.get("/admin/withdraws/request", adminMiddleware, getRequest);
   app.put("/admin/bank/approve/:id", adminMiddleware, ApproveRequest);
   app.put("/admin/bank/rejected/:id", adminMiddleware, rejectedRequest);
+  app.get("/admin/notification", adminMiddleware, getNotifications);
+  app.post("/admin/verify", adminMiddleware, upload.single("file"), verify);
 };

@@ -33,7 +33,7 @@ export const createPackagePlan = async (req, res) => {
     const result = await packages.save();
     if (result) {
       return res.send({
-        success: false,
+        success: true,
         message: "Package Add Successfully",
       });
     } else {
@@ -117,13 +117,13 @@ export const deletePackageplan = async (req, res) => {
   try {
     const _id = req.params.id;
     PackagePlan.findByIdAndDelete({ _id }, (err, result) => {
-      if (result.icon != "") {
-        try {
-          fs.unlinkSync("./uploads/" + result.icon);
-        } catch (error) {
-          return res.send(error);
-        }
-      }
+      // if (result.icon != "") {
+      //   try {
+      //     fs.unlinkSync("./uploads/" + result.icon);
+      //   } catch (error) {
+      //     return res.send(error);
+      //   }
+      // }
       if (result) {
         return res.send({
           success: true,

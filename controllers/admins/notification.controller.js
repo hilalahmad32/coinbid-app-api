@@ -1,6 +1,12 @@
-const sendNotification = async (req, res) => {
+import Notification from "../../models/Notification.model.js";
+
+export const getNotifications = async (req, res) => {
   try {
-    // const {};
+    const notifications = await Notification.find({}).populate("users");
+    return res.send({
+      success: true,
+      notifications: notifications,
+    });
   } catch (error) {
     return res.send({
       success: true,

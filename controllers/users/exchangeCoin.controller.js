@@ -1,4 +1,5 @@
 import ExchangeCoin from "../../models/ExchangeCoin.model.js";
+import Notification from "../../models/Notification.model.js";
 import PriceCoin from "../../models/PriceCoin.model.js";
 import UserWallet from "../../models/UserWallet.model.js";
 
@@ -6,7 +7,7 @@ export const changeCoin = async (req, res) => {
   try {
     const { coins } = req.body;
     const users = req.user_id;
-    const wallet = await UserWallet.findOne({ users });
+    const wallet = await UserWallet.findOne({ users }).populate("users");
     const priceCoin = await PriceCoin.find({});
     if (coins < 10) {
       return res.send({
@@ -26,6 +27,11 @@ export const changeCoin = async (req, res) => {
           wallet.coins -= parseInt(coins);
           wallet.price += totalprice;
           await wallet.save();
+          const notification = new Notification({
+            users: user_id,
+            message: `${wallet.users.name} is Change ${coins}`,
+          });
+          await notification.save();
           return res.send({
             success: true,
             message: "Coin Exchange Successfully",
