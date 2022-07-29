@@ -49,7 +49,8 @@ export const addBank = async (req, res) => {
 };
 export const userGetBanks = async (req, res) => {
   try {
-    const banks = await Bank.find({}).populate("users");
+    const users = req.user_id;
+    const banks = await Bank.find({ users: users }).populate("users");
     res.send({
       success: true,
       banks: banks,
