@@ -47,3 +47,17 @@ export const addBank = async (req, res) => {
     });
   }
 };
+export const userGetBanks = async (req, res) => {
+  try {
+    const banks = await Bank.find({}).populate("users");
+    res.send({
+      success: true,
+      banks: banks,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};

@@ -4,7 +4,10 @@ import {
   userWatchedAds,
 } from "../../controllers/admins/ads.controller.js";
 import { withRequest } from "../../controllers/admins/request.controller.js";
-import { addBank } from "../../controllers/users/bank.controller.js";
+import {
+  addBank,
+  userGetBanks,
+} from "../../controllers/users/bank.controller.js";
 import { changeCoin } from "../../controllers/users/exchangeCoin.controller.js";
 import {
   buyCoin,
@@ -50,6 +53,7 @@ export default (app) => {
 
   // banks routes
   app.post("/users/bank", userMiddleware, addBank);
+  app.get("/users/bank", userMiddleware, userGetBanks);
 
   // user wallet routes
   app.get("/users/wallet", userMiddleware, getUserWallet);
