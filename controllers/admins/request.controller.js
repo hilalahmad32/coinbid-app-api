@@ -64,6 +64,7 @@ export const withRequest = async (req, res) => {
     const users = req.user_id;
     const { money } = req.body;
     const wallet = await UserWallet.findOne({ users }).populate("users");
+    const banks = await Bank.findOne({ users });
     if (money <= wallet.price) {
       // const bank = await Bank.findOne({ users });
       // bank.amount += parseInt(money);
@@ -81,6 +82,9 @@ export const withRequest = async (req, res) => {
         transaction: money + " INR Requested ",
       });
       await transaction.save();
+
+      banks.amount += parseInt(money);
+      await banks.save();
       return res.send({
         success: true,
         message: "Request send successfully",
