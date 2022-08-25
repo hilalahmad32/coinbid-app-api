@@ -3,7 +3,7 @@ import Report from "../../models/Report.model.js";
 export const getReport = async (req, res) => {
   try {
     const users = req.user_id;
-    const reports = await Report.findOne({ users });
+    const reports = await Report.findOne({ users }).populate("packages");
     return res.send({
       success: true,
       reports: reports,

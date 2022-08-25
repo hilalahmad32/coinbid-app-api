@@ -8,6 +8,7 @@ import VideoAds from "../../models/VideoAds.model.js";
 import GoogleAds from "../../models/GoogleAds.model.js";
 import User from "../../models/User.model.js";
 import Order from "../../models/Order.model.js";
+import Report from "../../models/Report.model.js";
 
 export const getAds = async (req, res) => {
   try {
@@ -25,7 +26,7 @@ export const getAds = async (req, res) => {
 };
 export const getVideoAds = async (req, res) => {
   try {
-    const video_ads = await VideoAds.find({}).sort({ "_id": -1 });
+    const video_ads = await VideoAds.find({}).sort({ "_id": -1 }).limit(5);
     res.send({
       success: true,
       videos: video_ads,
@@ -77,7 +78,7 @@ export const getCoin = async (req, res) => {
     // );
     // const users = await User.find({}).count();
     // const orders = await Order.find({}).count();
-    const orders = await Order.find({});
+    const orders = await Order.find({}).limit(50).sort({ "_id": -1 });
     // const totalData = Math.ceil(orders / users);
     // const showCoins = coins.slice(0, totalData);
     // console.log(showCoins);
@@ -105,25 +106,31 @@ export const subscribePlan = async (req, res) => {
         message: "Id Not found",
       });
     } else {
-      const planSub = await PackagePlan.findById({ _id: id });
+      // const planSub = await PackagePlan.findById({ _id: id });
       const isSubPlan = await SubscribePlan.findOne({
         users,
-        packages: planSub._id,
+        packages: id,
       });
       if (isSubPlan) {
-        isSubPlan.status = true;
-        await isSubPlan.save();
+        // isSubPlan.status = true;
+        // await isSubPlan.save();
         return res.send({
-          success: true,
-          message: "package Again Subscribe Subscribe Successfully",
+          success: false,
+          message: "Already Subscribe this plan",
         });
       } else {
         const sub = new SubscribePlan({
           users,
-          packages: planSub._id,
+          packages: id,
           status: true,
         });
         await sub.save();
+
+        const report = await Report({
+          packages: id,
+          users: users,
+        });
+        await report.save();
         return res.send({
           success: true,
           message: "package Subscribe Successfully",

@@ -108,3 +108,8 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
+
+
+export const googleSignup= async (req, res) => {
+  
+}

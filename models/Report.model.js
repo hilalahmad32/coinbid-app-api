@@ -5,6 +5,10 @@ const reportSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  packages: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "PackagePlan",
+  },
   ads_watch: {
     type: Number,
     default: 0,
