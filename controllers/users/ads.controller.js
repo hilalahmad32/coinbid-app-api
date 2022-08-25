@@ -109,14 +109,13 @@ export const subscribePlan = async (req, res) => {
       // const planSub = await PackagePlan.findById({ _id: id });
       const isSubPlan = await SubscribePlan.findOne({
         users,
-        packages: id,
       });
       if (isSubPlan) {
         // isSubPlan.status = true;
         // await isSubPlan.save();
         return res.send({
           success: false,
-          message: "Already Subscribe this plan",
+          message: "You have one  subscribe a package",
         });
       } else {
         const sub = new SubscribePlan({
@@ -125,7 +124,6 @@ export const subscribePlan = async (req, res) => {
           status: true,
         });
         await sub.save();
-
         const report = await Report({
           packages: id,
           users: users,

@@ -1,6 +1,7 @@
 import PackagePlan from "../../models/PackagePlan.model.js";
 import fs from "fs";
 import Ads from "../../models/Ads.model.js";
+import cloudinary from "cloudinary";
 export const getPackageplan = async (req, res) => {
   try {
     const packages = await PackagePlan.find({}).sort({ "_id": -1 });
@@ -19,30 +20,33 @@ export const getPackageplan = async (req, res) => {
 export const createPackagePlan = async (req, res) => {
   try {
     const { title, price, expire_date, coins, recommended } = req.body;
-    const file = req.file;
-    let filename = "";
-    if (file) {
-      filename = req.file.filename;
-    }
-    const packages = new PackagePlan({
-      title,
-      price,
-      expire_date,
-      coins,
-      recommended,
+    const file = req.files.image;
+    // let filename = "";
+    // if (file) {
+    //   filename = req.file.filename;
+    // }
+    cloudinary.v2.uploader.upload(file.tempFilePath, async (err, result) => {
+      const packages = new PackagePlan({
+        title,
+        price,
+        expire_date,
+        coins,
+        recommended,
+        icon: result.url,
+      });
+      const data = await packages.save();
+      if (data) {
+        return res.send({
+          success: true,
+          message: "Package Add Successfully",
+        });
+      } else {
+        return res.send({
+          success: false,
+          message: "Some problem",
+        });
+      }
     });
-    const result = await packages.save();
-    if (result) {
-      return res.send({
-        success: true,
-        message: "Package Add Successfully",
-      });
-    } else {
-      return res.send({
-        success: false,
-        message: "Some problem",
-      });
-    }
   } catch (error) {
     return res.send({
       success: false,

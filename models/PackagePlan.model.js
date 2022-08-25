@@ -26,6 +26,9 @@ const packagePlanSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  icon: {
+    type: String,
+  },
 });
 
 const PackagePlan = mongoose.model("PackagePlan", packagePlanSchema);

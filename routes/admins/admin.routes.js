@@ -155,7 +155,7 @@ export default (app) => {
   app.post(
     "/admin/package/plan",
     adminMiddleware,
-    upload.single("icon"),
+    // upload.single("icon"),
     createPackagePlan,
   );
   app.patch("/admin/package/plan/:id", adminMiddleware, editPackageplan);
