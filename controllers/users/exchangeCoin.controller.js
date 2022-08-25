@@ -81,6 +81,7 @@ export const changeCoin = async (req, res) => {
     const users = req.user_id;
     const { coin, price } = req.body;
     const wallet = await UserWallet.findOne({ users });
+    console.log(wallet);
     if (wallet.coins > coin) {
       if (!coin || !price) {
         return res.send({
