@@ -65,36 +65,43 @@ export const withRequest = async (req, res) => {
     const { money } = req.body;
     const wallet = await UserWallet.findOne({ users }).populate("users");
     const banks = await Bank.findOne({ users });
-    if (money <= wallet.price) {
-      // const bank = await Bank.findOne({ users });
-      // bank.amount += parseInt(money);
-      // const result = await bank.save();
-      // if (result) {
-      wallet.price -= parseInt(money);
-      await wallet.save();
-      const notification = new Notification({
-        users: users,
-        message: `${wallet.users.name} want to withdraw money`,
-      });
-      await notification.save();
-      const transaction = new Transaction({
-        users: users,
-        transaction: money + " INR Requested ",
-      });
-      await transaction.save();
-
-      banks.amount += parseInt(money);
-      await banks.save();
-      return res.send({
-        success: true,
-        message: "Request send successfully",
-      });
-      // }
-    } else {
+    if (!banks) {
       return res.send({
         success: false,
-        message: `Your wallet have only ${wallet.price} money `,
+        message: "Please add bank first then exchange the coins",
       });
+    } else {
+      if (money <= wallet.price) {
+        // const bank = await Bank.findOne({ users });
+        // bank.amount += parseInt(money);
+        // const result = await bank.save();
+        // if (result) {
+        wallet.price -= parseInt(money);
+        await wallet.save();
+        const notification = new Notification({
+          users: users,
+          message: `${wallet.users.name} want to withdraw money`,
+        });
+        await notification.save();
+        const transaction = new Transaction({
+          users: users,
+          transaction: money + " INR Requested ",
+        });
+        await transaction.save();
+
+        banks.amount += parseInt(money);
+        await banks.save();
+        return res.send({
+          success: true,
+          message: "Request send successfully",
+        });
+        // }
+      } else {
+        return res.send({
+          success: false,
+          message: `Your wallet have only ${wallet.price} money `,
+        });
+      }
     }
   } catch (error) {
     return res.send({

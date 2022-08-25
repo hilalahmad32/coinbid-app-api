@@ -5,6 +5,7 @@ import Report from "../../models/Report.model.js";
 import Transaction from "../../models/Transaction.model.js";
 import UserWallet from "../../models/UserWallet.model.js";
 import Order from "../../models/Order.model.js";
+import Bank from "../../models/Bank.model.js";
 
 // export const changeCoin = async (req, res) => {
 //   try {
@@ -81,39 +82,46 @@ export const changeCoin = async (req, res) => {
     const users = req.user_id;
     const { coin, price } = req.body;
     const wallet = await UserWallet.findOne({ users });
-    console.log(wallet);
-    if (wallet.coins > coin) {
-      if (!coin || !price) {
-        return res.send({
-          success: false,
-          message: "Please enter required field",
-        });
-      } else {
-        const order = new Order({
-          users,
-          coin,
-          price,
-        });
-        const orders = await order.save();
-        if (orders) {
-          wallet.coins -= parseInt(coin);
-          await wallet.save();
-          return res.send({
-            success: true,
-            message: "Order Add Successfully",
-          });
-        } else {
-          return res.send({
-            success: false,
-            message: "Some Problem",
-          });
-        }
-      }
-    } else {
+    const banks = await Bank.findOne({ users });
+    if (!banks) {
       return res.send({
         success: false,
-        message: "Your wallet have " + wallet.coins + " Coins",
+        message: "Please add bank first then exchange the coins",
       });
+    } else {
+      if (wallet.coins > coin) {
+        if (!coin || !price) {
+          return res.send({
+            success: false,
+            message: "Please enter required field",
+          });
+        } else {
+          const order = new Order({
+            users,
+            coin,
+            price,
+          });
+          const orders = await order.save();
+          if (orders) {
+            wallet.coins -= parseInt(coin);
+            await wallet.save();
+            return res.send({
+              success: true,
+              message: "Order Add Successfully",
+            });
+          } else {
+            return res.send({
+              success: false,
+              message: "Some Problem",
+            });
+          }
+        }
+      } else {
+        return res.send({
+          success: false,
+          message: "Your wallet have " + wallet.coins + " Coins",
+        });
+      }
     }
   } catch (e) {
     return res.send({
