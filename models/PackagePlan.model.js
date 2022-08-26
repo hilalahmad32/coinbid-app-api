@@ -12,7 +12,11 @@ const packagePlanSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  banners: {
+  ads: {
+    type: Number,
+    default: 0,
+  },
+  total_ads: {
     type: Number,
     default: 0,
   },

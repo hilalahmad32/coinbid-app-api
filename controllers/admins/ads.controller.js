@@ -3,6 +3,7 @@ import fs from "fs";
 import Ads from "../../models/Ads.model.js";
 import UserWallet from "../../models/UserWallet.model.js";
 import Report from "../../models/Report.model.js";
+import VideoAds from "../../models/VideoAds.model.js";
 
 export const getAds = async (req, res) => {
   try {
@@ -55,8 +56,8 @@ export const updateAds = async (req, res) => {
     const old_pack = await PackagePlan.findById({ _id: old_package });
     const new_pack = await PackagePlan.findById({ _id: new_package });
     if (new_package != old_package) {
-      old_pack.banners >= 1 ? old_pack.banners -= 1 : "";
-      new_pack.banners >= 0 ? new_pack.banners += 1 : "";
+      old_pack.ads >= 1 ? old_pack.ads -= 1 : "";
+      new_pack.ads >= 0 ? new_pack.ads += 1 : "";
     }
     await old_pack.save();
     await new_pack.save();
@@ -103,8 +104,15 @@ export const addAds = async (req, res) => {
     });
     const ad = await ads.save();
     const plan = await PackagePlan.findById({ _id: packages });
-    plan.banners += 1;
-    await plan.save();
+    if (plan.ads == plan.total_ads) {
+      return res.send({
+        success: false,
+        message: "Only " + plan.total_ads + " ads for one package",
+      });
+    } else {
+      plan.ads += 1;
+      await plan.save();
+    }
     if (ad) {
       return res.send({
         success: true,
@@ -223,24 +231,51 @@ export const watchedAds = async (req, res) => {
 export const userWatchedAds = async (req, res) => {
   try {
     const users = req.user_id;
-    const _id = req.params.id;
-    const ads = await Ads.findByIdAndUpdate({ _id }, {
-      status: 1,
-    });
+    // const _id = req.params.id;
+    const video_id = req.params.id;
+
+    // console.log(video_id);
+    // if (_id) {
+    //   const ads = await Ads.findById({ _id });
+    //   const wallet = await UserWallet.findOne({ users });
+    //   wallet.coins += parseInt(ads.coins);
+    //   await wallet.save();
+    //   const report = await Report.find({ users: users }).count();
+    //   const updateReport = await Report.findOne({ users: users });
+    //   if (report == 1) {
+    //     updateReport.ads_watch += 1;
+    //     updateReport.coin_earned = parseInt(wallet.coins);
+    //     updateReport.today_coin_earned += parseInt(ads.coins);
+    //     await updateReport.save();
+    //   } else {
+    //     const new_report = new Report({
+    //       users,
+    //       updateReport: 1,
+    //     });
+    //     await new_report.save();
+    //   }
+    //   return res.send({
+    //     success: true,
+    //     "message": "Ads watcheds",
+    //   });
+    // } else {
+    const ads = await VideoAds.findById({ _id: video_id });
     const wallet = await UserWallet.findOne({ users });
-    wallet.coins += parseInt(ads.price);
+    wallet.coins += parseInt(ads.coins);
     await wallet.save();
     const report = await Report.find({ users: users }).count();
     const updateReport = await Report.findOne({ users: users });
     if (report == 1) {
       updateReport.ads_watch += 1;
       updateReport.coin_earned = parseInt(wallet.coins);
-      updateReport.today_coin_earned += parseInt(ads.price);
+      updateReport.today_coin_earned += parseInt(ads.coins);
       await updateReport.save();
     } else {
       const new_report = new Report({
         users,
-        updateReport: 1,
+        ads_watch: 1,
+        coin_earned: parseInt(wallet.coins),
+        today_coin_earned: parseInt(ads.coins),
       });
       await new_report.save();
     }
@@ -248,6 +283,7 @@ export const userWatchedAds = async (req, res) => {
       success: true,
       "message": "Ads watcheds",
     });
+    // }
   } catch (error) {
     return res.send({
       success: false,

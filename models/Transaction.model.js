@@ -13,6 +13,9 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  received: {
+    type: Boolean,
+  },
   status: {
     type: String,
     default: "Pending",

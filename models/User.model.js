@@ -40,6 +40,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  is_social: {
+    type: Boolean,
+  },
 });
 const User = mongoose.model("User", UserSchema);
 export default User;

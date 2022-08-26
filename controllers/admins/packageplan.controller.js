@@ -19,7 +19,8 @@ export const getPackageplan = async (req, res) => {
 
 export const createPackagePlan = async (req, res) => {
   try {
-    const { title, price, expire_date, coins, recommended } = req.body;
+    const { title, price, expire_date, coins, recommended, total_ads } =
+      req.body;
     const file = req.files.image;
     // let filename = "";
     // if (file) {
@@ -33,6 +34,7 @@ export const createPackagePlan = async (req, res) => {
         coins,
         recommended,
         icon: result.url,
+        total_ads,
       });
       const data = await packages.save();
       if (data) {

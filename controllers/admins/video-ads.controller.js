@@ -35,9 +35,7 @@ export const addVideoAds = async (req, res) => {
         video: result.url,
       });
       const data = await videos.save();
-      // const plan = await PackagePlan.findById({ _id: packages });
-      // plan.banners += 1;
-      // await plan.save();
+
       if (data) {
         return res.send({
           success: true,
@@ -50,6 +48,16 @@ export const addVideoAds = async (req, res) => {
         });
       }
     });
+    // const plan = await PackagePlan.findById({ _id: packages });
+    // if (plan.ads == plan.total_ads) {
+    //   return res.send({
+    //     success: false,
+    //     message: "Only " + plan.total_ads + " ads for one package",
+    //   });
+    // } else {
+    //   plan.ads += 1;
+    //   await plan.save();
+    // }
     // if (file) {
     //   filename = file.filename;
     // }
@@ -102,7 +110,7 @@ export const editVideoAds = async (req, res) => {
 export const updateVideoAds = async (req, res) => {
   try {
     const id = req.params.id;
-    const { title, coins } = req.body;
+    const { title, coins, old_package, new_package } = req.body;
     const file = req.files.video;
     cloudinary.v2.uploader.upload(file.tempFilePath, {
       resource_type: "video",
@@ -111,11 +119,17 @@ export const updateVideoAds = async (req, res) => {
       const videos = await VideoAds.findByIdAndUpdate({ _id: id }, {
         title,
         coins,
+        packages: new_package,
         video: result.url,
       });
-      // const plan = await PackagePlan.findById({ _id: packages });
-      // plan.banners += 1;
-      // await plan.save();
+      const old_pack = await PackagePlan.findById({ _id: old_package });
+      const new_pack = await PackagePlan.findById({ _id: new_package });
+      if (new_package != old_package) {
+        old_pack.ads >= 1 ? old_pack.ads -= 1 : "";
+        new_pack.ads >= 0 ? new_pack.ads += 1 : "";
+      }
+      await old_pack.save();
+      await new_pack.save();
       if (videos) {
         return res.send({
           success: true,

@@ -85,7 +85,8 @@ export const withRequest = async (req, res) => {
         await notification.save();
         const transaction = new Transaction({
           users: users,
-          transaction: money + " INR Requested ",
+          transaction: money + " INR Requested",
+          received: false,
         });
         await transaction.save();
 

@@ -34,7 +34,9 @@ export const getDashboardBanks = async (req, res) => {
 
 export const unpaid = async (req, res) => {
   try {
-    const banks = await Bank.find({ status: "pending" }).populate("users");
+    const banks = await Bank.find({ status: "pending" }).populate("users").sort(
+      { "_id": -1 },
+    );
     res.send({
       success: true,
       banks: banks,
@@ -49,7 +51,23 @@ export const unpaid = async (req, res) => {
 
 export const paid = async (req, res) => {
   try {
-    const banks = await Bank.find({ status: "Approved" }).populate("users");
+    const banks = await Bank.find({ status: "Approved" }).populate("users")
+      .sort({ "_id": -1 });
+    res.send({
+      success: true,
+      banks: banks,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const byDate = async (req, res) => {
+  try {
+    const banks = await Bank.find({}).populate("users");
     res.send({
       success: true,
       banks: banks,

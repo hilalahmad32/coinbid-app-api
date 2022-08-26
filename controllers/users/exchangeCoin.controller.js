@@ -97,6 +97,7 @@ export const changeCoin = async (req, res) => {
           });
         } else {
           const order = new Order({
+            order_id: "Ex " + Math.floor(Math.random() * 1000000),
             users,
             coin,
             price,

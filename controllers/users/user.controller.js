@@ -30,46 +30,94 @@ const transporter = nodemailer.createTransport({
 //   text: "mail is sends",
 // };
 
-export const createUser = async (req, res, next) => {
+export const createUser = async (req, res) => {
   try {
-    const { name, email, password, contact } = req.body;
+    const { name, email, password, contact, is_social, profile } = req.body;
     const is_email = await User.findOne({ email });
-    if (is_email) {
-      return res.send({
-        success: false,
-        message: "Email already Exist",
-      });
-    } else {
-      const hash_password = await bcryptjs.hash(password, 12);
-      const users = new User({
-        name,
-        email,
-        password: hash_password,
-        contact,
-      });
-      const result = await users.save();
-      const coins = await BounesCoin.find({});
-      const wallets = new UserWallet({
-        coins: coins[0].coins,
-        users: result._id,
-        price: 0,
-      });
-      await wallets.save();
-      if (result) {
-        const notification = new Notification({
-          users: result._id,
-          message: `New ${name} User are Signup`,
-        });
-        await notification.save();
+    if (is_social) {
+      if (is_email) {
+        const user_id = { user_id: result._id };
+        const token = jwt.sign(
+          user_id,
+          "HILALAHMADISAFULLSTACKDEVELOPER",
+          {
+            expiresIn: "1day",
+          },
+        );
         return res.send({
           success: true,
-          message: "Account Create Successfully",
+          token,
+          message: "Login Successfully",
         });
       } else {
+        const users = new User({
+          name,
+          email,
+          profile,
+          contact: "",
+          is_social,
+        });
+        const result = await users.save();
+        const coins = await BounesCoin.find({});
+        const wallets = new UserWallet({
+          coins: coins[0].coins,
+          users: result._id,
+          price: 0,
+        });
+        await wallets.save();
+
+        const user_id = { user_id: result._id };
+        const token = jwt.sign(
+          user_id,
+          "HILALAHMADISAFULLSTACKDEVELOPER",
+          {
+            expiresIn: "1day",
+          },
+        );
+        return res.send({
+          success: true,
+          token,
+          message: "Login Successfully",
+        });
+      }
+    } else {
+      if (is_email) {
         return res.send({
           success: false,
-          message: "Server Problem",
+          message: "Email already Exist",
         });
+      } else {
+        const hash_password = await bcryptjs.hash(password, 12);
+        const users = new User({
+          name,
+          email,
+          password: hash_password,
+          contact,
+        });
+        const result = await users.save();
+        const coins = await BounesCoin.find({});
+        const wallets = new UserWallet({
+          coins: coins[0].coins,
+          users: result._id,
+          price: 0,
+        });
+        await wallets.save();
+        if (result) {
+          const notification = new Notification({
+            users: result._id,
+            message: `New ${name} User are Signup`,
+          });
+          await notification.save();
+          return res.send({
+            success: true,
+            message: "Account Create Successfully",
+          });
+        } else {
+          return res.send({
+            success: false,
+            message: "Server Problem",
+          });
+        }
       }
     }
   } catch (error) {
@@ -84,40 +132,47 @@ export const signInUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const users = await User.findOne({ email });
-    if (users) {
-      const compare_password = await bcryptjs.compare(
-        password,
-        users.password,
-      );
-      if (compare_password) {
-        const user_id = { user_id: users._id };
-        const token = jwt.sign(
-          user_id,
-          "HILALAHMADISAFULLSTACKDEVELOPER",
-          {
-            expiresIn: "1day",
-          },
+    if (users.is_social) {
+      return res.send({
+        success: false,
+        message: "You are login with google",
+      });
+    } else {
+      if (users) {
+        const compare_password = await bcryptjs.compare(
+          password,
+          users.password,
         );
-        res.cookie("user_access_token", token, {
-          httpOnly: true,
-        });
+        if (compare_password) {
+          const user_id = { user_id: users._id };
+          const token = jwt.sign(
+            user_id,
+            "HILALAHMADISAFULLSTACKDEVELOPER",
+            {
+              expiresIn: "1day",
+            },
+          );
+          res.cookie("user_access_token", token, {
+            httpOnly: true,
+          });
 
-        return res.send({
-          success: true,
-          token,
-          message: "Login Successfully",
-        });
+          return res.send({
+            success: true,
+            token,
+            message: "Login Successfully",
+          });
+        } else {
+          return res.send({
+            success: false,
+            message: "Invalid Username And Password",
+          });
+        }
       } else {
         return res.send({
           success: false,
-          message: "Invalid Username And Password",
+          message: "Invalid Username And Passwor",
         });
       }
-    } else {
-      return res.send({
-        success: false,
-        message: "Invalid Username And Passwor",
-      });
     }
   } catch (error) {
     return res.send({
