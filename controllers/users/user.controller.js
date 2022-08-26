@@ -36,7 +36,7 @@ export const createUser = async (req, res) => {
     const is_email = await User.findOne({ email });
     if (is_social) {
       if (is_email) {
-        const user_id = { user_id: result._id };
+        const user_id = { user_id: is_email._id };
         const token = jwt.sign(
           user_id,
           "HILALAHMADISAFULLSTACKDEVELOPER",
@@ -54,8 +54,9 @@ export const createUser = async (req, res) => {
           name,
           email,
           profile,
-          contact: "",
+          contact: "null",
           is_social,
+          password: "null",
         });
         const result = await users.save();
         const coins = await BounesCoin.find({});
