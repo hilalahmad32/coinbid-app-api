@@ -9,6 +9,7 @@ import GoogleAds from "../../models/GoogleAds.model.js";
 import User from "../../models/User.model.js";
 import Order from "../../models/Order.model.js";
 import Report from "../../models/Report.model.js";
+import cron from "node-cron";
 
 export const getAds = async (req, res) => {
   try {
@@ -26,11 +27,54 @@ export const getAds = async (req, res) => {
 };
 export const getVideoAds = async (req, res) => {
   try {
-    const video_ads = await VideoAds.find({}).sort({ "_id": -1 }).limit(5);
-    res.send({
-      success: true,
-      videos: video_ads,
-    });
+    const users = req.user_id;
+    const total_count = await VideoAds.find({}).count();
+    // let limitrecords = 5;
+
+    // function getRandomArbitrary() {
+    //   return Math.ceil(Math.random() * total_count);
+    // }
+    // var skipRecords = getRandomArbitrary();
+    // const video_ads = await VideoAds.find({}).sort({ "_id": -1 }).skip(
+    //   total_count,
+    // ).limit(-7);
+    var random = Math.floor(Math.random() * total_count);
+    // const video_ads = await VideoAds.find({}).sort({ "_id": -1 })
+    //   .limit(5).skip(random);
+    // const total_ads = await VideoAds.find({}).sort({ "_id": -1 })
+    //   .limit(5).skip(random).count();
+    const wallet = await UserWallet.findOne({ users });
+    const size = 5;
+    const total_size = size - wallet.counter;
+    if (wallet.counter != 5) {
+      if (wallet.users == users && wallet.counter > 0) {
+        const video_ads = await VideoAds.aggregate([{
+          $sample: { size: total_size },
+        }]).sort({ "_id": -1 });
+        return res.send({
+          success: true,
+          // total_ads: total_ads,
+          videos: video_ads,
+        });
+      } else {
+        const video_ads = await VideoAds.aggregate([{
+          $sample: { size: 5 },
+        }]).sort({ "_id": -1 });
+        return res.send({
+          success: true,
+          // total_ads: total_ads,
+          videos: video_ads,
+        });
+      }
+    } else {
+      return res.send({
+        success: false,
+        message: "Today 5 ads completed",
+      });
+    }
+    // const total_ads = await VideoAds.aggregate([{
+    //   $sample: { size: 1 },
+    // }]).count();
   } catch (error) {
     return res.send({
       success: false,
@@ -78,7 +122,11 @@ export const getCoin = async (req, res) => {
     // );
     // const users = await User.find({}).count();
     // const orders = await Order.find({}).count();
-    const orders = await Order.find({}).limit(50).sort({ "_id": -1 });
+    const orders = await Order.aggregate([{
+      $sample: { size: 50 },
+    }]).sort({
+      "_id": -1,
+    });
     // const totalData = Math.ceil(orders / users);
     // const showCoins = coins.slice(0, totalData);
     // console.log(showCoins);
@@ -207,6 +255,21 @@ export const getGoogleAds = async (req, res) => {
       success: true,
       ads: ads,
     });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// delete ads after 24hr
+export const removeAdsCounter = async (req, res) => {
+  try {
+    const users = req.user_id;
+    const wallet = await UserWallet.findOne({ users });
+    wallet.counter = 0;
+    await wallet.save();
   } catch (error) {
     return res.send({
       success: false,

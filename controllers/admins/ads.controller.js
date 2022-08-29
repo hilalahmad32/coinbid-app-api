@@ -262,6 +262,7 @@ export const userWatchedAds = async (req, res) => {
     const ads = await VideoAds.findById({ _id: video_id });
     const wallet = await UserWallet.findOne({ users });
     wallet.coins += parseInt(ads.coins);
+    wallet.counter += 1;
     await wallet.save();
     const report = await Report.find({ users: users }).count();
     const updateReport = await Report.findOne({ users: users });

@@ -4,6 +4,7 @@ import {
   adminLogin,
 } from "../../controllers/admins/admin.controller.js";
 import {
+  byDate,
   getBanks,
   getDashboardBanks,
   paid,
@@ -112,6 +113,7 @@ export default (app) => {
   app.get("/admin/banks", adminMiddleware, getBanks);
   app.get("/admin/banks/unpaid", adminMiddleware, unpaid);
   app.get("/admin/banks/paid", adminMiddleware, paid);
+  app.get("/admin/banks/date", adminMiddleware, byDate);
   app.get("/admin/dashboard/banks", adminMiddleware, getDashboardBanks);
 
   // ads routes
@@ -161,7 +163,7 @@ export default (app) => {
   app.patch("/admin/package/plan/:id", adminMiddleware, editPackageplan);
   app.put(
     "/admin/package/plan/:id",
-    upload.single("icon"),
+    // upload.single("icon"),
     adminMiddleware,
     updatePackagePlan,
   );
@@ -196,7 +198,7 @@ export default (app) => {
   app.put("/admin/bank/approve/:id", adminMiddleware, ApproveRequest);
   app.put("/admin/bank/rejected/:id", adminMiddleware, rejectedRequest);
   app.get("/admin/notification", adminMiddleware, getNotifications);
-  app.post("/admin/verify", adminMiddleware, upload.single("file"), verify);
+  app.post("/admin/verify", adminMiddleware, verify);
 
   // video ads
   app.post(

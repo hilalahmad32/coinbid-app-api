@@ -1,10 +1,12 @@
+"use strict";
+
 import Banner from "../../models/Banner.model.js";
 import fs from "fs";
 import cloudinary from "cloudinary";
 
 export const getBanner = async (req, res) => {
   try {
-    const banners = await Banner.find({});
+    const banners = await Banner.find({}).sort({ "_id": -1 });
     return res.send({
       success: true,
       banners: banners,
@@ -21,10 +23,6 @@ export const addBanner = async (req, res) => {
   try {
     const { title, color, image } = req.body;
     const file = req.files.image;
-    // let filename = "";
-    // if (file) {
-    //   filename = req.file.filename;
-    // }
     cloudinary.v2.uploader.upload(file.tempFilePath, async (err, result) => {
       const banners = new Banner({
         image: result.url,

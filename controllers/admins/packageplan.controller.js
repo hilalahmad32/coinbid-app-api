@@ -60,42 +60,39 @@ export const createPackagePlan = async (req, res) => {
 export const updatePackagePlan = async (req, res) => {
   try {
     const id = req.params.id;
-    const { title, price, expire_date, recommended, coins } = req.body;
-    // const file = req.file;
-    // let filename = "";
-    // if (file) {
-    //   filename = req.file.filename;
-    //   if (old_image != "") {
-    //     try {
-    //       fs.unlinkSync("./uploads/" + old_image);
-    //     } catch (error) {
-    //       res.send({
-    //         success: false,
-    //         message: error.message,
-    //       });
-    //     }
-    //   }
-    // } else {
-    //   filename = old_image;
-    // }
-    const packages = await PackagePlan.findByIdAndUpdate({ _id: id }, {
-      title,
-      price,
-      expire_date,
-      coins,
-      recommended,
-    });
-    if (packages) {
-      return res.send({
-        success: true,
-        message: "Package Update Successfully",
-      });
-    } else {
-      return res.send({
-        success: false,
-        message: "Some problem",
-      });
+    const { title, price, expire_date, coins, recommended, total_ads } =
+      req.body;
+    let filename = "";
+    if (req.files != null) {
+      filename = req.files.image;
     }
+
+    cloudinary.v2.uploader.upload(
+      filename.tempFilePath,
+      async (err, result) => {
+        const packages = new PackagePlan({
+          title,
+          price,
+          expire_date,
+          coins,
+          recommended,
+          icon: result.url,
+          total_ads,
+        });
+        const data = await packages.save();
+        if (data) {
+          return res.send({
+            success: true,
+            message: "Package Add Successfully",
+          });
+        } else {
+          return res.send({
+            success: false,
+            message: "Some problem",
+          });
+        }
+      },
+    );
   } catch (error) {
     return res.send({
       success: false,

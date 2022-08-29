@@ -16,6 +16,7 @@ import {
   getPackageplan,
   getSubscribePlan,
   getVideoAds,
+  removeAdsCounter,
   subscribePlan,
 } from "../../controllers/users/ads.controller.js";
 import {
@@ -107,6 +108,11 @@ export default (app) => {
   app.get("/users/google/ads", userMiddleware, getGoogleAds);
   app.put("/users/coin/empty", userMiddleware, emptyTodayEarn);
   app.delete("/users/delete/coin", userMiddleware, deleteCoin);
+  app.put("/users/empty/ads", userMiddleware, removeAdsCounter);
+
+  // setTimeout(() => {
+  //   app.put("/users/empty/ads", userMiddleware, removeAdsCounter);
+  // }, 5000);
 
   // change plan
   // app.put('/users/change/plan',userMiddleware)

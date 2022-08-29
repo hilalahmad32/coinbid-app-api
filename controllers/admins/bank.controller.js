@@ -67,7 +67,9 @@ export const paid = async (req, res) => {
 
 export const byDate = async (req, res) => {
   try {
-    const banks = await Bank.find({}).populate("users");
+    const banks = await Bank.find({}).sort({
+      "created_at": -1,
+    }).populate("users");
     res.send({
       success: true,
       banks: banks,

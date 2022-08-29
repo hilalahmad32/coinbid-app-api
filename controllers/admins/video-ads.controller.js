@@ -48,7 +48,7 @@ export const addVideoAds = async (req, res) => {
         });
       }
     });
-    // const plan = await PackagePlan.findById({ _id: packages });
+    // const plan = await pPackagePlan.findById({ _id: packages });
     // if (plan.ads == plan.total_ads) {
     //   return res.send({
     //     success: false,
