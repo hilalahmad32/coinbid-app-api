@@ -213,7 +213,7 @@ export default (app) => {
   app.put(
     "/admin/video/ads/:id",
     adminMiddleware,
-    upload.single("video"),
+    // upload.single("video"),
     updateVideoAds,
   );
 

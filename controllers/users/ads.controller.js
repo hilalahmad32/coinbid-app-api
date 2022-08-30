@@ -29,52 +29,65 @@ export const getVideoAds = async (req, res) => {
   try {
     const users = req.user_id;
     const total_count = await VideoAds.find({}).count();
-    // let limitrecords = 5;
-
-    // function getRandomArbitrary() {
-    //   return Math.ceil(Math.random() * total_count);
-    // }
-    // var skipRecords = getRandomArbitrary();
-    // const video_ads = await VideoAds.find({}).sort({ "_id": -1 }).skip(
-    //   total_count,
-    // ).limit(-7);
-    var random = Math.floor(Math.random() * total_count);
-    // const video_ads = await VideoAds.find({}).sort({ "_id": -1 })
-    //   .limit(5).skip(random);
-    // const total_ads = await VideoAds.find({}).sort({ "_id": -1 })
-    //   .limit(5).skip(random).count();
     const wallet = await UserWallet.findOne({ users });
+    const subscribe = await SubscribePlan.findOne({ users }).populate(
+      "packages",
+    );
     const size = 5;
     const total_size = size - wallet.counter;
-    if (wallet.counter != 5) {
-      if (wallet.users == users && wallet.counter > 0) {
-        const video_ads = await VideoAds.aggregate([{
-          $sample: { size: total_size },
-        }]).sort({ "_id": -1 });
-        return res.send({
-          success: true,
-          // total_ads: total_ads,
-          videos: video_ads,
-        });
-      } else {
-        const video_ads = await VideoAds.aggregate([{
-          $sample: { size: 5 },
-        }]).sort({ "_id": -1 });
-        return res.send({
-          success: true,
-          // total_ads: total_ads,
-          videos: video_ads,
-        });
+    if (subscribe) {
+      if (subscribe.status == true) {
+        if (wallet.counter != subscribe.packages.ads + 5) {
+          if (
+            wallet.users == users &&
+            wallet.counter != subscribe.packages.ads + 5
+          ) {
+            const size1 = subscribe.packages.ads + 5;
+            const total_size1 = size1 - wallet.counter;
+            const video_ads = await VideoAds.aggregate([{
+              $sample: { size: total_size1 },
+            }]).sort({ "_id": -1 });
+            return res.send({
+              success: true,
+              total_size: total_size1,
+              videos: video_ads,
+            });
+          } else {
+            return res.send({
+              success: false,
+              message: "Today " + subscribe.packages.ads + 5 + " ads completed",
+            });
+          }
+        } else {
+          return res.send({
+            success: false,
+            message: "Today " + (parseInt(subscribe.packages.ads) + 5) +
+              " ads completed",
+          });
+        }
       }
     } else {
-      return res.send({
-        success: false,
-        message: "Today 5 ads completed",
-      });
+      if (wallet.counter != 5) {
+        if (
+          wallet.users == users &&
+          wallet.counter != 5
+        ) {
+          const video_ads = await VideoAds.aggregate([{
+            $sample: { size: total_size },
+          }]).sort({ "_id": -1 });
+          return res.send({
+            success: true,
+            total_size: total_size,
+            videos: video_ads,
+          });
+        }
+      } else {
+        return res.send({
+          success: false,
+          message: "Today 5 ads watched",
+        });
+      }
     }
-    // const total_ads = await VideoAds.aggregate([{
-    //   $sample: { size: 1 },
-    // }]).count();
   } catch (error) {
     return res.send({
       success: false,
@@ -114,32 +127,61 @@ export const getBanner = async (req, res) => {
 
 export const getCoin = async (req, res) => {
   try {
-    // const users = req.user_id;
-    // const count = await Coin.find({ users }).count();
-    // var random = Math.floor(Math.random() * count);
-    // const coins = await Coin.find({ users }).skip(random).limit(
-    //   50,
-    // );
-    // const users = await User.find({}).count();
-    // const orders = await Order.find({}).count();
-    const orders = await Order.aggregate([{
-      $sample: { size: 50 },
-    }]).sort({
-      "_id": -1,
-    });
-    // const totalData = Math.ceil(orders / users);
-    // const showCoins = coins.slice(0, totalData);
-    // console.log(showCoins);
-    if (orders) {
-      return res.send({
-        success: true,
-        orders: orders,
+    const { min, max } = req.body;
+    if (min || max) {
+      const orders = await Order.find({
+        price: {
+          $lte: max,
+          $gte: min,
+        },
       });
+      if (orders.length > 0) {
+        return res.send({
+          success: true,
+          orders,
+        });
+      } else {
+        return res.send({
+          success: false,
+          message: `Record not found between ${min} and ${max}`,
+        });
+      }
+    } else {
+      const orders = await Order.aggregate([{
+        $sample: { size: 50 },
+      }]).sort({
+        "_id": -1,
+      });
+      if (orders) {
+        return res.send({
+          success: true,
+          orders: orders,
+        });
+      }
     }
   } catch (error) {
     return res.send({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+export const slideOrderVariable = async (req, res) => {
+  try {
+    // const min = await Order.find({}).sort({ coin: -1 }).limit(1); // for MAX
+    // const max = await Order.find({}).sort({ coin: +1 }).limit(1);
+    const max = await Order.findOne({}).sort({ price: -1 }).limit(1); // for MAX
+    const min = await Order.findOne({}).sort({ price: +1 }).limit(1);
+    return res.send({
+      success: true,
+      min: min.price,
+      max: max.price,
+    });
+  } catch (e) {
+    return res.send({
+      success: false,
+      message: e.message,
     });
   }
 };
@@ -274,6 +316,24 @@ export const removeAdsCounter = async (req, res) => {
     return res.send({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+export const deletePackagePlan = async (req, res) => {
+  try {
+    const users = req.user_id;
+    const packages = await SubscribePlan.findOneAndDelete({ users });
+    if (packages) {
+      return res.send({
+        success: true,
+        message: "Package expired , Buy new packages",
+      });
+    }
+  } catch (e) {
+    return res.send({
+      success: false,
+      message: e.message,
     });
   }
 };

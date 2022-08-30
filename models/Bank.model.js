@@ -11,6 +11,7 @@ const bankSchema = new mongoose.Schema({
   upi_id: { type: String, required: true },
   amount: { type: Number, default: 0 },
   status: { type: String, default: "pending" },
+  transactionId: { type: String },
 }, {
   timestamps: {
     createdAt: "created_at",

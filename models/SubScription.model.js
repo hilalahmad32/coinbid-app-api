@@ -17,9 +17,10 @@ const subscribeSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  date: {
-    type: Date,
-    default: Date.now,
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   },
 });
 

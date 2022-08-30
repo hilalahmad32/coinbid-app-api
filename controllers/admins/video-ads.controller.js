@@ -20,44 +20,45 @@ export const getVideoAds = async (req, res) => {
 
 export const addVideoAds = async (req, res) => {
   try {
-    const { title, coins } = req.body;
+    const { title, coins, packages } = req.body;
     // const file = req.file;
     const file = req.files.video;
     let filename = "";
-    cloudinary.v2.uploader.upload(file.tempFilePath, {
-      resource_type: "video",
-      chunk_size: 6000000,
-    }, async (err, result) => {
-      const videos = new VideoAds({
-        title,
-        coins,
-        // packages,
-        video: result.url,
+    const plan = await PackagePlan.findById({ _id: packages });
+    if (plan.ads == plan.total_ads) {
+      return res.send({
+        success: false,
+        message: "Only " + plan.total_ads + " ads for one package",
       });
-      const data = await videos.save();
+    } else {
+      cloudinary.v2.uploader.upload(file.tempFilePath, {
+        resource_type: "video",
+        chunk_size: 6000000,
+      }, async (err, result) => {
+        const videos = new VideoAds({
+          title,
+          coins,
+          packages,
+          video: result.url,
+        });
+        const data = await videos.save();
+        plan.ads += 1;
+        await plan.save();
+        if (data) {
+          return res.send({
+            success: true,
+            message: "Video Ads add Successfully",
+          });
+        } else {
+          return res.send({
+            success: true,
+            message: "Server problem",
+          });
+        }
+      });
+    }
 
-      if (data) {
-        return res.send({
-          success: true,
-          message: "Video Ads add Successfully",
-        });
-      } else {
-        return res.send({
-          success: true,
-          message: "Server problem",
-        });
-      }
-    });
-    // const plan = await pPackagePlan.findById({ _id: packages });
-    // if (plan.ads == plan.total_ads) {
-    //   return res.send({
-    //     success: false,
-    //     message: "Only " + plan.total_ads + " ads for one package",
-    //   });
-    // } else {
-    //   plan.ads += 1;
-    //   await plan.save();
-    // }
+    //
     // if (file) {
     //   filename = file.filename;
     // }

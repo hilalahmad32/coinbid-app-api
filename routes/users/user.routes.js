@@ -9,6 +9,7 @@ import {
 import { withRequest } from "../../controllers/admins/request.controller.js";
 import {
   cancelPlan,
+  deletePackagePlan,
   getBanner,
   getCancelPlan,
   getCoin,
@@ -17,6 +18,7 @@ import {
   getSubscribePlan,
   getVideoAds,
   removeAdsCounter,
+  slideOrderVariable,
   subscribePlan,
 } from "../../controllers/users/ads.controller.js";
 import {
@@ -109,6 +111,8 @@ export default (app) => {
   app.put("/users/coin/empty", userMiddleware, emptyTodayEarn);
   app.delete("/users/delete/coin", userMiddleware, deleteCoin);
   app.put("/users/empty/ads", userMiddleware, removeAdsCounter);
+  app.delete("/users/delete/plan", userMiddleware, deletePackagePlan);
+  app.get("/users/order/var", userMiddleware, slideOrderVariable);
 
   // setTimeout(() => {
   //   app.put("/users/empty/ads", userMiddleware, removeAdsCounter);

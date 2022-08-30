@@ -233,32 +233,6 @@ export const userWatchedAds = async (req, res) => {
     const users = req.user_id;
     // const _id = req.params.id;
     const video_id = req.params.id;
-
-    // console.log(video_id);
-    // if (_id) {
-    //   const ads = await Ads.findById({ _id });
-    //   const wallet = await UserWallet.findOne({ users });
-    //   wallet.coins += parseInt(ads.coins);
-    //   await wallet.save();
-    //   const report = await Report.find({ users: users }).count();
-    //   const updateReport = await Report.findOne({ users: users });
-    //   if (report == 1) {
-    //     updateReport.ads_watch += 1;
-    //     updateReport.coin_earned = parseInt(wallet.coins);
-    //     updateReport.today_coin_earned += parseInt(ads.coins);
-    //     await updateReport.save();
-    //   } else {
-    //     const new_report = new Report({
-    //       users,
-    //       updateReport: 1,
-    //     });
-    //     await new_report.save();
-    //   }
-    //   return res.send({
-    //     success: true,
-    //     "message": "Ads watcheds",
-    //   });
-    // } else {
     const ads = await VideoAds.findById({ _id: video_id });
     const wallet = await UserWallet.findOne({ users });
     wallet.coins += parseInt(ads.coins);
@@ -282,7 +256,7 @@ export const userWatchedAds = async (req, res) => {
     }
     return res.send({
       success: true,
-      "message": "Ads watcheds",
+      "message": "Ads watched",
     });
     // }
   } catch (error) {

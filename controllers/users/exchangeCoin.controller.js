@@ -144,7 +144,7 @@ export const deleteCoin = async (req, res) => {
     }
     wallet.coins += totalCoins;
     await wallet.save();
-    const order = await Order.deleteMany({ status: false });
+    await Order.deleteMany({ status: false });
     if (orders) {
       return res.send({
         success: true,

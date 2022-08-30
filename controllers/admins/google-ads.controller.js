@@ -17,12 +17,13 @@ export const getGoogleAds = async (req, res) => {
 
 export const createGoogleAds = async (req, res) => {
   try {
-    const { app_id, ad_unit_id } = req.body;
+    const { app_id, ad_unit_id, coins } = req.body;
     const is_ads = await GoogleAds.findOne({ ad_unit_id });
     if (!is_ads) {
       const ads = new GoogleAds({
         app_id,
         ad_unit_id,
+        coins,
       });
       const result = await ads.save();
       if (result) {
@@ -68,10 +69,11 @@ export const editGoogleAds = async (req, res) => {
 export const updateGoogleAds = async (req, res) => {
   try {
     const id = req.params.id;
-    const { app_id, ad_unit_id } = req.body;
+    const { app_id, ad_unit_id, coins } = req.body;
     const ad = await GoogleAds.findByIdAndUpdate({ _id: id }, {
       app_id,
       ad_unit_id,
+      coins,
     });
     if (ad) {
       return res.send({
