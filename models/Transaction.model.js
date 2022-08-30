@@ -20,6 +20,10 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     default: "Pending",
   },
+  price: {
+    type: Number,
+    default: 0,
+  },
 }, {
   timestamps: {
     createdAt: "created_at",

@@ -83,6 +83,7 @@ export const buyCoin = async (req, res) => {
       users: users,
       from: order.users,
       transaction: "Payment Received",
+      price: parseInt(order.price),
       received: true,
     });
     const transactions = await transaction.save();

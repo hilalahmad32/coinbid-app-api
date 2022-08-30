@@ -32,7 +32,7 @@ import {
   changeCoin,
   deleteCoin,
 } from "../../controllers/users/exchangeCoin.controller.js";
-import { getTransaction } from "../../controllers/users/transaction.model.js";
+import { getTransaction } from "../../controllers/users/transaction.controller.js";
 import {
   buyCoin,
   getUserWallet,
