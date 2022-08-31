@@ -72,26 +72,33 @@ export const buyCoin = async (req, res) => {
     const taxs = await Tax.findOne({});
     const fromUserWallet = await UserWallet.findOne({ users: order.users });
     const userWallet = await UserWallet.findOne({ users });
-    userWallet.coins += parseInt(order.coin);
-    userWallet.price -= parseInt(order.price);
-    await userWallet.save();
+    if (userWallet.price >= order.price) {
+      userWallet.coins += parseInt(order.coin);
+      userWallet.price -= parseInt(order.price);
+      await userWallet.save();
 
-    fromUserWallet.price += (parseInt(order.price) * taxs.taxs) / 100;
-    await fromUserWallet.save();
+      fromUserWallet.price += (parseInt(order.price) * taxs.taxs) / 100;
+      await fromUserWallet.save();
 
-    const transaction = new Transaction({
-      users: users,
-      from: order.users,
-      transaction: "Payment Received",
-      price: parseInt(order.price),
-      received: true,
-    });
-    const transactions = await transaction.save();
-    if (transactions) {
-      await Order.findByIdAndDelete({ _id: id });
+      const transaction = new Transaction({
+        users: users,
+        from: order.users,
+        transaction: "Payment Received",
+        price: parseInt(order.price),
+        received: true,
+      });
+      const transactions = await transaction.save();
+      if (transactions) {
+        await Order.findByIdAndDelete({ _id: id });
+        return res.send({
+          success: true,
+          message: "Coin Buy Successfully",
+        });
+      }
+    } else {
       return res.send({
-        success: true,
-        message: "Coin Buy Successfully",
+        success: false,
+        message: "Don't have enough money in wallet to buy this order",
       });
     }
   } catch (error) {
@@ -101,4 +108,3 @@ export const buyCoin = async (req, res) => {
     });
   }
 };
-

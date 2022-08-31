@@ -117,8 +117,12 @@ export default (app) => {
   app.put("/users/empty/ads", userMiddleware, removeAdsCounter);
   app.delete("/users/delete/plan", userMiddleware, deletePackagePlan);
   app.get("/users/order/var", userMiddleware, slideOrderVariable);
-  app.get("/users/transaction/yesterday", userMiddleware, yesterdayTransection);
-  app.get("/users/transaction/today", userMiddleware, todayTransection);
+  app.get(
+    "/users/transactions/yesterday",
+    userMiddleware,
+    yesterdayTransection,
+  );
+  app.get("/users/transactions/today", userMiddleware, todayTransection);
 
   // setTimeout(() => {
   //   app.put("/users/empty/ads", userMiddleware, removeAdsCounter);
