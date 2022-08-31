@@ -32,7 +32,11 @@ import {
   changeCoin,
   deleteCoin,
 } from "../../controllers/users/exchangeCoin.controller.js";
-import { getTransaction } from "../../controllers/users/transaction.controller.js";
+import {
+  getTransaction,
+  todayTransection,
+  yesterdayTransection,
+} from "../../controllers/users/transaction.controller.js";
 import {
   buyCoin,
   getUserWallet,
@@ -113,6 +117,8 @@ export default (app) => {
   app.put("/users/empty/ads", userMiddleware, removeAdsCounter);
   app.delete("/users/delete/plan", userMiddleware, deletePackagePlan);
   app.get("/users/order/var", userMiddleware, slideOrderVariable);
+  app.get("/users/transaction/yesterday", userMiddleware, yesterdayTransection);
+  app.get("/users/transaction/today", userMiddleware, todayTransection);
 
   // setTimeout(() => {
   //   app.put("/users/empty/ads", userMiddleware, removeAdsCounter);

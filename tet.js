@@ -57,3 +57,4 @@ var random = Math.floor(Math.random() * total_count);
 // );
 // const users = await User.find({}).count();
 // const orders = await Order.find({}).count();
+console.log(new Date(new Date().getTime() - (24 * 60 * 60 * 10000)));
