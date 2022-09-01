@@ -1,5 +1,6 @@
 import Transaction from "../../models/Transaction.model.js";
 import moment from "moment";
+import Bank from "../../models/Bank.model.js";
 export const getTransaction = async (req, res) => {
   try {
     const users = req.user_id;
@@ -70,6 +71,25 @@ export const todayTransection = async (req, res) => {
     return res.send({
       success: false,
       message: err.message,
+    });
+  }
+};
+
+export const addTransactionId = async (req, res) => {
+  try {
+    const users = req.user_id;
+    const { transaction_id } = req.body;
+    const bank = await Bank.findOne({ users });
+    bank.transactionId = transaction_id;
+    await bank.save();
+    return res.send({
+      success: true,
+      message: "Transaction id add successfully",
+    });
+  } catch (e) {
+    return res.send({
+      success: false,
+      message: e.message,
     });
   }
 };

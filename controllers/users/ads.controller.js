@@ -129,6 +129,7 @@ export const getCoin = async (req, res) => {
   try {
     const { min, max } = req.body;
     const users = req.user_id;
+    console.log(users);
     if (min || max) {
       const orders = await Order.find({
         price: {
@@ -148,12 +149,19 @@ export const getCoin = async (req, res) => {
         });
       }
     } else {
-      const orders = await Order.aggregate([{
-        $sample: { size: 50 },
-      }]).sort({
+      const orders = await Order.aggregate([
+        {
+          $sample: { size: 50 },
+        },
+      ]).sort({
         "_id": -1,
       });
-      if (orders.includes(users)) {
+      if (orders) {
+        return res.send({
+          success: true,
+          orders: orders,
+        });
+      } else {
         return res.send({
           success: true,
           orders: orders,

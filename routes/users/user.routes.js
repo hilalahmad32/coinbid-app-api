@@ -33,6 +33,7 @@ import {
   deleteCoin,
 } from "../../controllers/users/exchangeCoin.controller.js";
 import {
+  addTransactionId,
   getTransaction,
   todayTransection,
   yesterdayTransection,
@@ -123,6 +124,7 @@ export default (app) => {
     yesterdayTransection,
   );
   app.get("/users/transactions/today", userMiddleware, todayTransection);
+  app.put("/users/bank/transactions", userMiddleware, addTransactionId);
 
   // setTimeout(() => {
   //   app.put("/users/empty/ads", userMiddleware, removeAdsCounter);
