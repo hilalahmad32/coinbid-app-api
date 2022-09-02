@@ -13,6 +13,11 @@ const withDrawRequestSchema = new mongoose.Schema({
     type: String,
     default: "Pending",
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 const WithDrawRequest = mongoose.model(
   "WithDrawRequest",

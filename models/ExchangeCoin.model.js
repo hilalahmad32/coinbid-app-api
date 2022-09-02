@@ -17,6 +17,11 @@ const exchangeCoinSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 
 const ExchangeCoin = mongoose.model("ExchangeCoin", exchangeCoinSchema);

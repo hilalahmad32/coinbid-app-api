@@ -12,6 +12,11 @@ const notificationSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 
 const Notification = mongoose.model("Notification", notificationSchema);

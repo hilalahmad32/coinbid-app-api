@@ -43,6 +43,11 @@ const UserSchema = new mongoose.Schema({
   is_social: {
     type: Boolean,
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 const User = mongoose.model("User", UserSchema);
 export default User;

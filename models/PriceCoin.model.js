@@ -9,6 +9,11 @@ const priceCoinSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 
 const PriceCoin = mongoose.model("PriceCoin", priceCoinSchema);

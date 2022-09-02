@@ -9,6 +9,11 @@ const AdminSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 const Admin = mongoose.model("Admin", AdminSchema);
 export default Admin;

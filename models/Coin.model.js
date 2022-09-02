@@ -25,6 +25,11 @@ const coinSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 
 const Coin = mongoose.model("Coin", coinSchema);

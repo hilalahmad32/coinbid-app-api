@@ -33,6 +33,11 @@ const packagePlanSchema = new mongoose.Schema({
   icon: {
     type: String,
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 
 const PackagePlan = mongoose.model("PackagePlan", packagePlanSchema);

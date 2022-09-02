@@ -49,7 +49,7 @@ export const adminLogin = async (req, res) => {
           password: hash_password,
         },
       );
-      admin.save();
+      await admin.save();
     }
   } catch (error) {
     return res.send({
@@ -64,7 +64,6 @@ export const admin = async (req, res) => {
     const admins = await AdminModel.findById({ _id: req.admin_id }).select(
       "-password",
     );
-    console.log(admins);
     return res.send({
       "success": true,
       "admins": admins,

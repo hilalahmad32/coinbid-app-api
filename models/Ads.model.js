@@ -22,6 +22,11 @@ const adsSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+}, {
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  },
 });
 const Ads = mongoose.model("Ad", adsSchema);
 export default Ads;
