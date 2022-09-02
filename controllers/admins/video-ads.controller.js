@@ -111,17 +111,45 @@ export const editVideoAds = async (req, res) => {
 export const updateVideoAds = async (req, res) => {
   try {
     const id = req.params.id;
-    const { title, coins, old_package, new_package } = req.body;
-    const file = req.files.video;
-    cloudinary.v2.uploader.upload(file.tempFilePath, {
-      resource_type: "video",
-      chunk_size: 6000000,
-    }, async (err, result) => {
+    const { title, coins, old_package, new_package, old_video } = req.body;
+    if (req.files) {
+      const file = req.files.video;
+      cloudinary.v2.uploader.upload(file.tempFilePath, {
+        resource_type: "video",
+        chunk_size: 6000000,
+      }, async (err, result) => {
+        const videos = await VideoAds.findByIdAndUpdate({ _id: id }, {
+          title,
+          coins,
+          packages: new_package,
+          video: result.url,
+        });
+        const old_pack = await PackagePlan.findById({ _id: old_package });
+        const new_pack = await PackagePlan.findById({ _id: new_package });
+        if (new_package != old_package) {
+          old_pack.ads >= 1 ? old_pack.ads -= 1 : "";
+          new_pack.ads >= 0 ? new_pack.ads += 1 : "";
+        }
+        await old_pack.save();
+        await new_pack.save();
+        if (videos) {
+          return res.send({
+            success: true,
+            message: "Video Ads Update Successfully",
+          });
+        } else {
+          return res.send({
+            success: false,
+            message: "Server problem",
+          });
+        }
+      });
+    } else {
       const videos = await VideoAds.findByIdAndUpdate({ _id: id }, {
         title,
         coins,
         packages: new_package,
-        video: result.url,
+        video: old_video,
       });
       const old_pack = await PackagePlan.findById({ _id: old_package });
       const new_pack = await PackagePlan.findById({ _id: new_package });
@@ -142,7 +170,7 @@ export const updateVideoAds = async (req, res) => {
           message: "Server problem",
         });
       }
-    });
+    }
   } catch (error) {
     return res.send({
       success: false,
