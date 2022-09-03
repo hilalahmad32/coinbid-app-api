@@ -228,6 +228,10 @@ export const subscribePlan = async (req, res) => {
           users: users,
         });
         await report.save();
+        const wallet=await UserWallet.findOne({users});
+        const plans=await PackagePlan.findById({_id:id});
+        wallet.total_ads=plans.total_ads+5
+        await wallet.save();
         return res.send({
           success: true,
           message: "package Subscribe Successfully",
