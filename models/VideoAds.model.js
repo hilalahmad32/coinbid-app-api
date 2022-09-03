@@ -9,10 +9,10 @@ const videoAdsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // packages: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "PackagePlan",
-  // },
+  packages: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "PackagePlan",
+  },
   coins: {
     type: String,
     required: true,

@@ -5,7 +5,9 @@ import cloudinary from "cloudinary";
 
 export const getVideoAds = async (req, res) => {
   try {
-    const video_ads = await VideoAds.find({}).sort({ "_id": -1 });
+    const video_ads = await VideoAds.find({}).populate("packages").sort({
+      "_id": -1,
+    });
     return res.send({
       success: true,
       videos: video_ads,
