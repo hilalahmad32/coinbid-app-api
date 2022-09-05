@@ -45,7 +45,7 @@ export const getVideoAds = async (req, res) => {
             const size1 = subscribe.packages.ads + 5;
             const total_size1 = size1 - wallet.counter;
             const video_ads = await VideoAds.aggregate([{
-              $sample: { size: total_size1 },
+              $sample: { size: size1 },
             }]).sort({ "_id": -1 });
             return res.send({
               success: true,
@@ -73,11 +73,11 @@ export const getVideoAds = async (req, res) => {
           wallet.counter != 5
         ) {
           const video_ads = await VideoAds.aggregate([{
-            $sample: { size: total_size },
+            $sample: { size: size },
           }]).sort({ "_id": -1 });
           return res.send({
             success: true,
-            total_size: total_size,
+            total_size: size,
             videos: video_ads,
           });
         }
@@ -338,9 +338,12 @@ export const deletePackagePlan = async (req, res) => {
     const users = req.user_id;
     const packages = await SubscribePlan.findOneAndDelete({ users });
     if (packages) {
+    const wallet = await UserWallet.findOne({ users });
+    wallet.total_ads = 5;
+    await wallet.save();
       return res.send({
         success: true,
-        message: "Package expired , Buy new packages",
+        message: "Package Delete Successufully, Buy new packages",
       });
     }
   } catch (e) {

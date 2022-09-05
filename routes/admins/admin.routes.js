@@ -104,6 +104,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 export default (app) => {
   app.post("/admin/login", adminLogin);
+  //app.post("/admin/wallet", userWallet);
   app.get("/admin", adminMiddleware, admin);
   app.get("/admin/users", adminMiddleware, getUser);
   app.get("/admin/total/users", adminMiddleware, totalUser);
