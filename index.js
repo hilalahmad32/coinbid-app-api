@@ -16,7 +16,7 @@ import cloudinary from "cloudinary";
 connection();
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
-app.use(session({ secret: "melody hensley is my spirit animal" }));
+app.use(session({ secret: "melody hensley is my spirit animal",option :true,saveUninitialized:true }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(fileUpload({
   useTempFiles: true,
